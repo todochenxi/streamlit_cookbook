@@ -1,7 +1,9 @@
 import streamlit as st
 import time
 import sys
+from typing import List
 import base64
+import os
 from st_weaviate_connection import WeaviateConnection, WeaviateFilter
 from weaviate.classes.query import Filter
 
@@ -18,14 +20,22 @@ SEARCH_MODES = {
 }
 
 # Functions
-def get_env_vars(env_vars):
+def get_env_vars(env_vars: List[str]):
     """Retrieve environment variables"""
-    env_vars = {var: st.secrets[var] for var in env_vars}
-    for var, value in env_vars.items():
+    env_var_dict = {}
+    for var in env_vars:
+        if os.environ.get(var) is not None:
+            env_var_dict[var] = os.environ.get(var)
+        elif st.secrets.get(var) is not None:
+            env_var_dict[var] = st.secrets.get(var)
+        else:
+            env_var_dict[var] = ""
+
+    for var, value in env_var_dict.items():
         if not value:
             st.error(f"{var} not set", icon="🚨")
             sys.exit(f"{var} not set")
-    return env_vars
+    return env_var_dict
 
 def display_chat_messages():
     """Print message history"""
