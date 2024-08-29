@@ -1,7 +1,6 @@
 import streamlit as st
 import time
 import sys
-import os
 import base64
 from st_weaviate_connection import WeaviateConnection, WeaviateFilter
 from weaviate.classes.query import Filter
@@ -21,7 +20,7 @@ SEARCH_MODES = {
 # Functions
 def get_env_vars(env_vars):
     """Retrieve environment variables"""
-    env_vars = {var: os.environ.get(var, "") for var in env_vars}
+    env_vars = {var: st.secrets[var] for var in env_vars}
     for var, value in env_vars.items():
         if not value:
             st.error(f"{var} not set", icon="🚨")
